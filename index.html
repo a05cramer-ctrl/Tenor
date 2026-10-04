@@ -1,0 +1,407 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Long or short any pump.fun coin. Perps on Solana sized by pool depth."><meta property="og:title" content="Tenor"><meta property="og:description" content="Long or short any pump.fun coin."><meta property="og:image" content="og.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="pfp.jpg"><script src="config.js"></script><title>Tenor</title></head><body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+<style>
+/* Layout: near-black exchange page. Left headline + paste-an-address, right a live pool table card; then ticker, stats, coin grid, safety, skew, flow, vault, limits, token, FAQ. */
+:root{
+  --bg:#0a0a0a; --panel:#111111; --panel2:#161616; --line:#222222; --text:#f4f4f2; --muted:#8a8a86;
+  --up:#3ddc97; --down:#ff6b6b; --acc:#c9f27a;
+  --sans:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{overflow-x:clip}
+body{background:var(--bg);color:var(--text);font:400 16px/1.55 var(--sans);margin:0;padding-inline:20px;padding-block:0;
+  background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);background-size:56px 56px;background-position:-1px -1px}
+a{color:inherit}
+[hidden]{display:none!important}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+.wrap{max-width:1000px;margin-inline:auto}
+.mono{font-family:var(--mono)}
+.up{color:var(--up)}.down{color:var(--down)}
+.lab{font:500 11px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1,h2,h3{font-family:var(--sans);margin:0;font-weight:700;letter-spacing:-.035em;text-wrap:balance}
+.demo{background:#1b1b12;border-bottom:1px solid #2c2c18;color:#d8e6a6;font:500 11px/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;text-align:center;padding:8px 20px;margin-inline:-20px}
+nav{display:flex;align-items:center;gap:26px;padding-block:14px;position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5;border-bottom:1px solid var(--line);margin-inline:-20px;padding-inline:20px}
+nav .in{max-width:1000px;margin-inline:auto;width:100%;display:flex;align-items:center;gap:26px;flex-wrap:wrap}
+.logo{display:flex;align-items:center;gap:9px;font:800 19px/1 var(--sans);letter-spacing:.04em;text-decoration:none}
+.logo svg{width:22px;height:22px}
+nav .links{display:flex;gap:22px;font:500 14px/1 var(--sans);color:var(--muted);flex-wrap:wrap}
+nav .links a{text-decoration:none}nav .links a:hover{color:var(--text)}
+nav .r{margin-left:auto;display:flex;align-items:center;gap:14px;font:500 11px/1 var(--mono);color:var(--muted);flex-wrap:wrap}
+nav .r b{color:var(--text);font-weight:500;margin-left:5px}
+.btn{font:600 14px/1 var(--sans);padding:12px 16px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--text);text-decoration:none;cursor:pointer;display:inline-block}
+.btn.w{background:var(--text);color:#0a0a0a;border-color:var(--text)}
+.btn[aria-disabled="true"]{background:transparent;color:var(--acc);border-color:var(--acc);cursor:not-allowed}.btn[aria-disabled="true"]:hover{background:rgba(201,242,122,.08)}
+.hero h1 .lg{color:var(--up)}.hero h1 .sh{color:var(--down)}
+.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;padding-block:72px 56px;align-items:start}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);background:#0e0e0e}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--up)}
+.hero h1{font-size:clamp(46px,7.2vw,84px);line-height:.96;margin-top:22px}
+.hero p{color:var(--muted);font-size:18px;max-width:46ch;margin:22px 0 26px}
+.paste{display:flex;gap:0;border:1px solid var(--line);border-radius:10px;background:#0e0e0e;overflow:hidden}
+.paste input{flex:1;min-width:0;background:none;border:0;color:var(--text);font:400 14px var(--mono);padding:16px 16px}
+.paste input::placeholder{color:var(--muted)}
+.paste button{border:0;border-left:1px solid var(--line);background:var(--panel2);color:var(--text);font:600 13px var(--sans);padding:0 18px;cursor:pointer}
+.note{font:400 12px/1.6 var(--mono);color:var(--muted);margin-top:12px}
+.links2{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font:400 12px var(--mono);color:var(--muted)}
+.links2 a{text-decoration:underline;text-underline-offset:3px}
+.res{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#0e0e0e;font:400 13px/1.7 var(--mono)}
+.card{border:1px solid var(--line);border-radius:14px;background:var(--panel);min-width:0}
+.card .h{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line)}
+.live{display:inline-flex;align-items:center;gap:7px;font:500 11px/1 var(--mono);letter-spacing:.12em;color:var(--text)}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--up)}
+.prow{display:grid;grid-template-columns:20px 34px 1fr auto auto auto;gap:12px;align-items:center;padding:12px 18px;border-bottom:1px solid #1a1a1a;font-size:14px}
+.prow .n{font:700 14px var(--sans)}
+.prow .s{font:400 12px var(--sans);color:var(--muted)}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:700 9px var(--mono);color:#0a0a0a}
+.lev{font:500 10px var(--mono);border:1px solid var(--line);padding:2px 5px;border-radius:4px;color:var(--muted);margin-left:6px}
+.px{text-align:right;font:500 13px var(--mono);font-variant-numeric:tabular-nums}
+.px small{display:block;font-size:11px}
+.mv{text-align:right;font:500 13px var(--mono);font-variant-numeric:tabular-nums}
+.mv small{display:block;color:var(--muted);font-size:10px}
+.ls{display:flex;gap:4px}
+.ls button{width:26px;height:26px;border-radius:5px;border:0;background:var(--text);color:#0a0a0a;font:700 11px var(--mono);cursor:pointer}
+.ls button:hover{background:var(--acc)}
+.card .f{display:flex;justify-content:space-between;padding:14px 18px;font:400 11px var(--mono);color:var(--muted);gap:10px;flex-wrap:wrap}
+.ticker{margin-inline:-20px;border-block:1px solid var(--line);background:#0c0c0c;overflow:hidden;white-space:nowrap;padding-block:16px;font:400 13px var(--mono);color:var(--muted)}
+.ticker div{display:inline-flex;gap:38px;animation:tk 60s linear infinite;padding-left:20px}
+.ticker .live{margin-right:6px}
+@keyframes tk{to{transform:translateX(-50%)}}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);border-inline:1px solid var(--line);margin-top:0}
+.stats>div{padding:22px 18px;border-right:1px solid var(--line);min-width:0}.stats>div:last-child{border:0}
+.stats .v{font:500 30px/1.2 var(--mono);margin:8px 0 4px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.stats .d{font:400 12px/1.4 var(--mono);color:var(--muted)}
+section{padding-block:88px 0}
+.eyebrow{display:flex;align-items:center;gap:9px}
+.eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--up)}
+h2.big{font-size:clamp(34px,5.4vw,60px);line-height:1;margin-top:14px}
+.sub{color:var(--muted);max-width:60ch;margin:18px 0 0;font-size:17px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:28px;justify-content:space-between;align-items:center}
+.tabs .t{display:flex;gap:6px;flex-wrap:wrap}
+.pill{font:500 12px var(--mono);border:1px solid var(--line);background:#0e0e0e;color:var(--muted);padding:8px 12px;border-radius:999px;cursor:pointer}
+.pill.on{background:var(--text);color:#0a0a0a;border-color:var(--text)}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:#0e0e0e;border:0;color:var(--muted);font:500 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:10px 12px;cursor:pointer}
+.seg button.on{background:var(--text);color:#0a0a0a}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+.cc{border:1px solid var(--line);border-radius:12px;background:var(--panel);padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.cc .top{display:flex;gap:10px;align-items:center}
+.cc .nm{font:700 14px var(--sans);display:flex;justify-content:space-between;flex:1;min-width:0;gap:6px}
+.cc .px2{display:flex;justify-content:space-between;font:500 14px var(--mono);font-variant-numeric:tabular-nums}
+.cc .meta{display:grid;grid-template-columns:1fr 1fr auto;gap:4px 8px;white-space:nowrap;font:500 10px var(--mono);color:var(--muted);letter-spacing:.08em;align-items:end}
+.cc .meta b{white-space:nowrap;color:var(--text);font-weight:500;font-size:12px;letter-spacing:0;display:block}
+.cc .ls button{width:22px;height:22px;font-size:10px}
+.more{margin:18px auto 0;display:block}
+.six{display:grid;grid-template-columns:repeat(3,1fr);margin-top:32px;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.six div{padding:24px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0}
+.six div:nth-child(3n){border-right:0}.six div:nth-child(n+4){border-bottom:0}
+.six .k{font:500 11px var(--mono);color:var(--muted)}
+.six h3{font-size:19px;margin:14px 0 8px;letter-spacing:-.02em}
+.six p{margin:0;color:var(--muted);font-size:14px}
+.sk{margin-top:30px;display:grid;grid-template-columns:1.5fr 1fr;gap:0;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.sk .l{padding:20px;border-right:1px solid var(--line);min-width:0}
+.sk .r{padding:20px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.sk canvas{width:100%;height:260px;display:block;margin-top:10px}
+.sl label{display:flex;justify-content:space-between;font:500 13px var(--sans);margin-bottom:8px}
+.sl output{font:700 14px var(--mono)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--line);border-radius:2px;outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--text);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--text);border:0;cursor:pointer}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;font:500 12px var(--mono);margin:0}
+.kv dt{color:var(--muted);letter-spacing:.1em;text-transform:uppercase}.kv dd{margin:0;text-align:right}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:30px;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden}
+.steps div{padding:22px;border-right:1px solid var(--line);min-width:0}.steps div:last-child{border:0}
+.steps h3{font-size:18px;margin:12px 0 8px}.steps p{margin:0;color:var(--muted);font-size:14px}
+.pnl{margin-top:16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px}
+.pnl .row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
+.pnl .box{border:1px solid var(--line);border-radius:10px;padding:14px;background:#0e0e0e;min-width:0}
+.pnl .box .v{font:700 22px var(--mono);margin-top:6px;font-variant-numeric:tabular-nums}
+.fund{margin-top:30px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.fund canvas{width:100%;height:200px;display:block}
+.vault{margin-top:30px;display:grid;grid-template-columns:1.2fr 1fr;gap:14px}
+.vault .card{padding:24px}
+.vault ul{margin:14px 0 0;padding:0;list-style:none;display:grid;gap:12px;font-size:15px;color:var(--muted)}
+.vault li b{color:var(--text);font-weight:600}
+.bar{height:8px;background:#222;border-radius:4px;overflow:hidden;margin:12px 0 6px}.bar i{display:block;height:100%;background:var(--up);width:1.6%}
+.tbl{margin-top:30px;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:auto}
+.tbl table{border-collapse:collapse;width:100%;min-width:640px;font:400 12px var(--mono)}
+.tbl th{text-align:left;color:var(--muted);font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tbl td{padding:11px 16px;border-bottom:1px solid #1a1a1a;white-space:nowrap}
+.tbl tr:last-child td{border:0}
+.addr{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.addr div{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel);font:400 12px var(--mono);color:var(--muted)}
+.addr b{display:block;color:var(--text);font-weight:500;margin-bottom:4px}
+.token{margin-top:30px;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:28px;display:grid;grid-template-columns:1.3fr 1fr;gap:28px}
+.ca{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#0e0e0e;font:400 13px var(--mono);flex-wrap:wrap}
+.ca code{flex:1;min-width:0;overflow-wrap:anywhere;color:var(--muted)}
+.ca button{font:500 11px var(--mono);letter-spacing:.1em;border:1px solid var(--line);background:none;color:var(--text);padding:7px 10px;border-radius:5px;cursor:pointer}
+.faq{margin-top:30px;border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
+.faq summary{cursor:pointer;font:600 19px var(--sans);letter-spacing:-.02em;list-style:none;display:flex;justify-content:space-between;gap:20px}
+.faq summary::after{content:"+";color:var(--muted);font-weight:400}
+.faq details[open] summary::after{content:"–"}
+.faq p{color:var(--muted);margin:14px 0 0;max-width:68ch;font-size:15px}
+.cta{padding-block:96px 24px;text-align:left}
+.cta h2{font-size:clamp(36px,6vw,72px);line-height:1}
+.foot{border-top:1px solid var(--line);margin-top:64px;padding-block:28px 48px;font:400 12px/1.7 var(--mono);color:var(--muted)}
+.tk{position:fixed;inset:0;background:#000b;display:grid;place-items:center;z-index:20;padding:20px}
+.tk .m{width:min(420px,100%);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:14px}
+@media (max-width:900px){
+  .hero{grid-template-columns:1fr;gap:36px;padding-block:44px 36px}
+  .stats{grid-template-columns:1fr 1fr 1fr}.stats>div:nth-child(3){border-right:0}.stats>div:nth-child(-n+3){border-bottom:1px solid var(--line)}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .six{grid-template-columns:1fr}.six div{border-right:0!important;border-bottom:1px solid var(--line)!important}.six div:last-child{border-bottom:0!important}
+  .sk,.fund,.vault,.token{grid-template-columns:1fr}.sk .l{border-right:0;border-bottom:1px solid var(--line)}
+  .steps{grid-template-columns:1fr 1fr}.steps div:nth-child(2){border-right:0}.steps div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .pnl .row{grid-template-columns:1fr 1fr}
+  .addr{grid-template-columns:1fr}
+  nav .links{display:none}
+  section{padding-block:60px 0}
+}
+@media (max-width:520px){
+  nav .in{flex-wrap:nowrap;gap:12px}nav .r span{display:none}nav .r{gap:0}nav .btn{padding:10px 14px}
+  .stats{grid-template-columns:1fr 1fr}.stats>div:nth-child(3){border-right:1px solid var(--line)}.stats>div:nth-child(2n){border-right:0}.stats>div{border-bottom:1px solid var(--line)}
+  .grid{grid-template-columns:1fr}
+  .prow{grid-template-columns:30px 1fr auto auto;}.prow .rk,.prow .mv{display:none}
+  .steps{grid-template-columns:1fr}.steps div{border-right:0!important;border-bottom:1px solid var(--line)}.steps div:last-child{border-bottom:0}
+}
+@media (prefers-reduced-motion:reduce){.ticker div{animation:none}}
+</style>
+
+<div class="wrap">
+<div class="demo">Demonstration · simulated markets and fills · the trading engine is not live yet</div>
+<nav><div class="in">
+  <a class="logo" href="#top" id="top"><svg viewBox="0 0 24 24" fill="#f4f4f2" aria-hidden="true"><path d="M2 3h20v5.5h-7.2V21H9.2V8.5H2z"/><path d="M16.4 12.5H22V18h-5.6z" fill="#c9f27a"/></svg>TENOR</a>
+  <div class="links"><a href="#markets">Markets</a><a href="#safety">Safety</a><a href="#skew">Skew</a><a href="#how">How it works</a><a href="#vault">Vault</a><a href="#limits">Limits</a><a href="#token">$TENOR</a><a href="#faq">FAQ</a></div>
+  <div class="r"><span>SLOT<b id="slot">—</b></span><span>SOL<b id="solpx">—</b></span><a class="btn w" href="#markets" id="conn" aria-disabled="true">Connect</a></div>
+</div></nav>
+
+<header class="hero">
+  <div>
+    <span class="chip">Perps on Solana</span>
+    <h1><span class="lg">Long</span> or <span class="sh">short</span> any pump.fun coin.</h1>
+    <p>If it has a real pool, you can trade it, small caps included. Limits grow with each coin's liquidity, so nothing trades bigger than its pool can price.</p>
+    <form class="paste" id="pf" autocomplete="off"><label for="pa" style="position:absolute;left:-9999px">Contract address</label><input id="pa" placeholder="Paste a mint address…" spellcheck="false"><button type="submit">Check</button></form>
+    <div class="note">Coins from a $15.00K pool at 2–5×. SOL, BTC and ETH up to 20×.</div>
+    <div class="links2"><a href="#markets">Browse every market</a><span>·</span><a href="#how">Open the terminal</a><span>·</span><a href="#limits">How limits are set</a></div>
+    <div class="res" id="res" hidden></div>
+  </div>
+  <div class="card" aria-label="Deepest coin pools">
+    <div class="h"><span class="lab">Deepest coin pools</span><span class="live">LIVE · SIM</span></div>
+    <div id="top7"></div>
+    <div class="f"><span>Ranked by depth · L/S = long / short open</span><a href="#markets" style="text-decoration:none;color:var(--text)">ALL MARKETS →</a></div>
+  </div>
+</header>
+
+<div class="ticker" aria-label="Simulated fills"><div id="tkr"></div></div>
+<div class="stats">
+  <div><div class="lab">Coins listed</div><div class="v" id="s1">—</div><div class="d">paste any mint to add one</div></div>
+  <div><div class="lab">Listing floor</div><div class="v">$15.00K</div><div class="d">effective pool size</div></div>
+  <div><div class="lab">Leverage</div><div class="v">2–5×</div><div class="d">coins · 20× on majors</div></div>
+  <div><div class="lab">Vault NAV</div><div class="v" id="s4">—</div><div class="d">tLP behind every trade</div></div>
+  <div><div class="lab">Open interest</div><div class="v" id="s5">—</div><div class="d">long + short</div></div>
+  <div><div class="lab">24h volume</div><div class="v" id="s6">—</div><div class="d" id="s6d">— fills</div></div>
+</div>
+
+<section id="markets">
+  <div class="eyebrow lab">Listed now</div>
+  <h2 class="big">Small caps, sized right.</h2>
+  <p class="sub" id="mk-sub"></p>
+  <div class="tabs">
+    <div class="t"><span class="pill"><b>2×</b> from $15.00K pool</span><span class="pill"><b>3×</b> from $50.00K pool</span><span class="pill"><b>4×</b> from $200.00K pool</span><span class="pill"><b>5×</b> from $1.00M pool</span></div>
+    <div class="seg" role="tablist" id="sort"><button class="on" data-s="small">Smallest first</button><button data-s="deep">Deepest first</button><button data-s="move">Biggest movers</button></div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <button class="btn more" id="more" type="button">Show all coins</button>
+</section>
+
+<section id="safety">
+  <div class="eyebrow lab">Built for thin books</div>
+  <h2 class="big">Pump it all you want.<br>It won't pay.</h2>
+  <p class="sub">Listing small coins is only safe if moving their pool doesn't move the money. Every coin price on Tenor is read straight from its pool and passed through these checks before it touches a position.</p>
+  <div class="six">
+    <div><span class="k">01</span><h3>Worst-of fills</h3><p>Coin buys fill at the higher of pool spot and the time-weighted price, sells at the lower. A spiked print never fills in your favour.</p></div>
+    <div><span class="k">02</span><h3>Pump guard</h3><p>When spot runs more than 10% from the average, new positions pause until it settles. Closing always works.</p></div>
+    <div><span class="k">03</span><h3>Two-sided depth</h3><p>Longs are capped by what it costs to pump the pool, shorts by what it costs to dump it. One-sided pools stay one-sided.</p></div>
+    <div><span class="k">04</span><h3>Warm-up</h3><p>A freshly listed coin builds price history before it takes its first position.</p></div>
+    <div><span class="k">05</span><h3>Profit cap</h3><p>A single coin position can make at most 3× its entry size, which bounds what a slow pump can pull from the vault.</p></div>
+    <div><span class="k">06</span><h3>Liquidations on the average</h3><p>Margin checks use the smoothed price, so a single wick can't liquidate you.</p></div>
+  </div>
+</section>
+
+<section id="skew">
+  <div class="eyebrow lab">Skew pricing</div>
+  <h2 class="big">The book sets your price.</h2>
+  <p class="sub">On every market, trades that pile onto the crowded side pay a small premium and trades that rebalance it get the better price and the lower fee. Drag both sliders: the numbers use the same formula the engine would.</p>
+  <div class="sk">
+    <div class="l"><span class="lab">Skew scale $42.00M · premium in bps vs trade size</span><canvas id="skc" aria-label="Premium by trade size"></canvas></div>
+    <div class="r">
+      <div class="sl"><label for="tr">Your trade <output id="tro"></output></label><input id="tr" type="range" min="-250000" max="250000" step="2500" value="112500"></div>
+      <div class="sl"><label for="bk">Book skew <output id="bko"></output></label><input id="bk" type="range" min="-250000" max="250000" step="2500" value="36000"></div>
+      <dl class="kv"><dt>Oracle</dt><dd id="k1"></dd><dt>Tenor</dt><dd id="k2"></dd><dt>Premium</dt><dd id="k3"></dd><dt>Fee</dt><dd id="k4"></dd><dt>You are</dt><dd id="k5"></dd></dl>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="eyebrow lab">How it works</div>
+  <h2 class="big">Every order, on a fresh print.</h2>
+  <p class="sub">Two steps, no stale prices. You place, the keeper prints, and the engine fills you at a price you can check on-chain.</p>
+  <div class="steps">
+    <div><span class="lab">01</span><h3>Place</h3><p>Post USDC margin and a worst acceptable price. It sits in the vault as escrow, and you pay a small SOL fee for the keeper.</p></div>
+    <div><span class="lab">02</span><h3>Fresh print</h3><p>The keeper publishes a price newer than your order, bounded by an oracle band. Nobody fills you on a stale price, including you.</p></div>
+    <div><span class="lab">03</span><h3>Fill</h3><p>Your fill is the print adjusted for the book's skew. If it's worse than your limit, the order cancels and refunds instead.</p></div>
+    <div><span class="lab">04</span><h3>Settle</h3><p>Close any time. PnL, funding and fees settle against the vault in one step. Unfilled market orders expire after 2m.</p></div>
+  </div>
+  <div class="pnl">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><span class="lab">$500 at 10× · SOL long</span>
+      <div class="seg" id="outc"><button class="on" data-o="win">Profit</button><button data-o="loss">Loss</button><button data-o="liq">Liquidated</button></div></div>
+    <div class="row" id="prow"></div>
+    <p class="note" id="pnote"></p>
+  </div>
+  <div class="fund">
+    <div><span class="lab">Velocity funding</span><h3 style="font-size:28px;margin:12px 0 10px">Crowded trades get pricier every hour.</h3><p class="sub" style="font-size:15px;margin:0">Funding doesn't jump to a number. It drifts while the book stays one-sided, capped at 0.30%/day. Pick a skew:</p>
+      <div class="seg" id="fsk" style="margin-top:16px;display:inline-flex"><button class="on" data-f="2">2% long-heavy</button><button data-f="5">5% long-heavy</button><button data-f="-4">4% short-heavy</button></div>
+      <dl class="kv" style="margin-top:18px"><dt>Who pays</dt><dd id="f1"></dd><dt>Day 1</dt><dd id="f2"></dd><dt>Cap reached</dt><dd id="f3"></dd></dl></div>
+    <canvas id="fc" aria-label="Funding rate over seven days"></canvas>
+  </div>
+</section>
+
+<section id="vault">
+  <div class="eyebrow lab">tLP vault</div>
+  <h2 class="big">Be the house.</h2>
+  <p class="sub">Deposit USDC and take the other side of every trade. LPs earn 80% of trading fees and every skew premium, plus whatever traders lose. They also pay out whatever traders win.</p>
+  <div class="vault">
+    <div class="card"><ul>
+      <li><b>Caps that scale.</b> Each side of each market is capped at a share of vault NAV, so open interest can't outgrow the backing.</li>
+      <li><b>Paid for imbalance.</b> Skew premiums and velocity funding pay the vault for carrying a one-sided book.</li>
+      <li><b>No bank runs.</b> Withdrawals take a 10m cooldown, then a 2d window, capped at 80% utilization.</li></ul>
+      <div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><a class="btn w" href="#vault" aria-disabled="true">Provide liquidity</a><a class="btn" href="#faq">LP risks</a></div></div>
+    <div class="card"><div class="lab">Vault (simulated)</div>
+      <dl class="kv" style="margin-top:14px"><dt>NAV</dt><dd id="v1"></dd><dt>tLP price</dt><dd>$1.0307</dd><dt>Utilization</dt><dd>1.6%</dd></dl>
+      <div class="bar"><i></i></div><div class="lab" style="text-transform:none;letter-spacing:0">withdrawal ceiling 80%</div></div>
+  </div>
+</section>
+
+<section id="limits">
+  <div class="eyebrow lab">Transparency</div>
+  <h2 class="big">Every limit in one table.</h2>
+  <p class="sub">At launch, every limit is read from the contracts. Until the engine is live this table shows the simulated values the markets above use.</p>
+  <div class="tbl"><table><thead><tr><th>Market</th><th>Max lev</th><th>Maint.</th><th>Maker / taker</th><th>Skew scale</th><th>OI cap / side</th><th>Funding cap</th><th>Hours</th></tr></thead><tbody id="ltb"></tbody></table></div>
+  <div class="addr"><div><b>Engine</b>posts at launch</div><div><b>Keeper</b>posts at launch</div><div><b>Vault</b>posts at launch</div></div>
+</section>
+
+<section id="token">
+  <div class="eyebrow lab">$TENOR</div>
+  <h2 class="big">The token is $TENOR.</h2>
+  <div class="token">
+    <div><p class="sub" style="margin:0 0 18px">$TENOR launches on pump.fun. Once its own pool clears the floor it can be listed on Tenor too, so you can long or short the exchange's own token.</p><div class="ca"><span class="lab">CA</span><code id="ca">Posts at launch</code><button type="button" id="cp" hidden>COPY</button></div></div>
+    <dl class="kv" style="align-content:start"><dt>Chain</dt><dd>Solana</dd><dt>Launched on</dt><dd>pump.fun</dd><dt>Fee split</dt><dd>posted at launch</dd></dl>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="eyebrow lab">FAQ</div>
+  <h2 class="big">Straight answers.</h2>
+  <div class="faq">
+    <details><summary>Which coins can I trade?</summary><p>Any pump.fun coin that has graduated to a pool with at least $15,000 of depth to move its price 10%. Paste a mint address and Tenor checks the pool and lists it.</p></details>
+    <details><summary>How small can a coin be?</summary><p>Small caps are the point. A $15K pool gets 2×. Leverage steps up to 3× at $50K, 4× at $200K and 5× at $1M.</p></details>
+    <details><summary>Why can't I short some coins?</summary><p>Shorts are capped by what it costs to dump the pool. If a pool is too thin to price a short safely, that side stays closed while longs may stay open.</p></details>
+    <details><summary>Is Tenor audited?</summary><p>Not yet. The engine is not live. This page demonstrates the markets and rules, and the numbers on it are simulated.</p></details>
+    <details><summary>Who takes the other side of my trade?</summary><p>The tLP vault. LPs earn the fees and skew premiums, and they also pay out trader profits.</p></details>
+    <details><summary>What if the keeper goes down?</summary><p>Orders can't fill without a fresh print, so they wait and then expire and refund after 2 minutes. Closing and withdrawals stay available.</p></details>
+  </div>
+</section>
+
+<div class="cta"><h2>Every coin on Solana.<br>Long or short.</h2><div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap"><a class="btn w" href="#markets">See the coins</a><a class="btn" href="#how">Open the terminal</a></div></div>
+<div class="foot">Tenor is a memecoin project. Everything marked simulated or demonstration is not live data. Leverage can lose all your margin. Nothing here is financial advice.</div>
+</div>
+
+<div class="tk" id="tk" hidden><div class="m"><div style="display:flex;justify-content:space-between;align-items:center"><span class="lab" id="tkh"></span><button class="btn" id="tkx" type="button">Close</button></div><div id="tkb" style="font:400 13px/1.7 var(--mono);color:var(--muted)"></div></div></div>
+
+<script>
+(function(){
+var C=window.TENOR_CFG,$=function(s){return document.querySelector(s)},reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+function fmt(n){if(n>=1e6)return"$"+(n/1e6).toFixed(2)+"M";if(n>=1e3)return"$"+(n/1e3).toFixed(n>=1e5?0:2)+"K";return"$"+n.toFixed(2)}
+function px(p){if(p>=1)return p.toFixed(p>=100?2:4);var z=Math.floor(-Math.log10(p))-1;var s=p.toFixed(z+4);return p<.001?"0.0"+String.fromCharCode(8320+z)+s.replace(/^0\.0*/,""):s}
+if(C.CA){$("#ca").textContent=C.CA;$("#cp").hidden=false}
+$("#cp").onclick=function(){try{navigator.clipboard.writeText(C.CA)}catch(e){}};
+/* simulated markets: invented coins */
+var N=[["HOGGY","Hoggy Inu",.0412,-2.9,590e3],["PIXLE","Pixle",.1581,-.04,164e3],["NODEZ","Nodez",.0204,9.2,119e3],["KELP","Kelp Protocol",.1160,-8.5,86.6e3],["BRICK","Brick",.3792,1.5,50.7e3],["FROGA","Froga",.00429,-6.9,17.5e3],["MOSS","Moss Systems",.0673,-4.7,16.1e3],["SHRMP","Shrimp",.00955,-26,15e3],["YAWN","Yawn",.0127,18.4,11.8e3],["ZZZED","Zzzed",.01418,-17,9802],["ORBIT","Orbit",.00168,117,3396],["TOAST","Toaster",.00165,-10.7,3347],["NOSHI","Noshi",.00133,-32,3009],["VOID","Voidling",.00111,-18,2767],["CRADL","Cradle",.00104,156,2649],["PLUM","Plum",6.4e-4,-24,2624],["SNAIL","Snailmail",8.3e-4,19.7,2532],["LIEGE","Liege",5.7e-4,293,1955],["DYNO","Dynamite",4.8e-4,97,1831],["PARLY","Parley",5.3e-4,-19,1806],["SCRGE","Scrooge",3.8e-4,-16.5,1633],["MONDO","Mondo",3.0e-4,369,1470],["HYDRA","Hydrax",3.0e-4,-17.8,1436],["MINTY","Minty",3.0e-4,64,1430],["CODER","Codemen",2.8e-4,-46,1388],["ORES","Ore",2.7e-4,-13,1359],["FABLE","Fabulous",2.1e-4,-31.6,1180],["ZKDOG","ZK Dog",1.8e-4,56,1177],["SPARE","Spare",1.8e-4,18,1144],["RECRD","Record",1.8e-4,20.7,1087],["CRED","Cred",1.5e-4,75,973],["RANGE","Range",1.3e-4,-8,927],["STANN","Stan",8.2e-5,-35,742],["ZIPPY","Zippy",7.2e-5,.7,704],["DAZZ","Dazzle",6.5e-5,-30,671],["SURPL","Surplus",6.8e-5,47,642],["LAINN","Lain",5.5e-5,-23,610],["EMETIC","Emet",5.6e-5,23,570],["LMOON","Lootmoon",3.7e-5,24,494],["EPOCH","Epoch Labs",3.5e-5,-33,463],["MURK","Murkle",3.0e-5,-34.6,454],["DELV","Delver",2.9e-5,-32,445],["SQSH","Squash",1.9e-5,-46,354],["AGNT","AgNet",1.0e-5,-72,263],["FIRMX","Dots Firm",5.9e-6,-63,200],["SMRTP","SmartPay",3.4e-6,-90,152]];
+var COL=["#c9f27a","#9ad1ff","#ffb86b","#f58bd0","#a8f0d8","#d4b8ff","#ffd86b"];
+function lev(d){return d>=1e6?5:d>=2e5?4:d>=5e4?3:d>=15e3?2:0}
+N=N.map(function(r,i){var d=r[4];var mc=d*(10+i*.5)*1;return{s:r[0],n:r[1],p:r[2],ch:r[3],d:d,L:lev(d)||2,mc:d*(i<8?30:i<20?22:14),c:COL[i%COL.length]}});
+function av(c){return'<span class="av" style="background:'+c.c+'">'+c.s.slice(0,4)+'</span>'}
+function row(c,i){return'<div class="prow"><span class="lab rk">'+(i+1)+'</span>'+av(c)+'<div><span class="n">'+c.s+'</span><span class="lev">'+c.L+'×</span><div class="s">'+c.n+'</div></div><div class="px">'+px(c.p)+'<small class="'+(c.ch<0?"down":"up")+'">'+(c.ch>0?"+":"")+c.ch.toFixed(2)+'%</small></div><div class="mv">'+fmt(c.d)+'<small>to move 10%</small></div><div class="ls"><button data-t="'+c.s+'" data-d="L" aria-label="Long '+c.s+'">L</button><button data-t="'+c.s+'" data-d="S" aria-label="Short '+c.s+'">S</button></div></div>'}
+$("#top7").innerHTML=N.slice(0,7).map(row).join("");
+$("#s1").textContent=N.length;
+$("#mk-sub").textContent=N.length+" simulated coins, "+N.filter(function(c){return c.mc<1e5}).length+" of them under a $100K market cap. Each one is measured by what it costs to move its pool 10%, and that sets its leverage and how much each side can hold. Small coins trade small, deep pools trade big.";
+var sort="small",shown=10;
+function card(c){return'<div class="cc"><div class="top">'+av(c)+'<div class="nm"><span>'+c.s+'</span><span class="lev" style="margin:0">'+c.L+'×</span></div></div><div class="px2"><span>'+px(c.p)+'</span><span class="'+(c.ch<0?"down":"up")+'">'+(c.ch>0?"+":"")+c.ch.toFixed(1)+'%</span></div><div class="meta"><div>MCAP<b>'+fmt(c.mc)+'</b></div><div>10% MOVE<b>'+fmt(c.d)+'</b></div><div class="ls"><button data-t="'+c.s+'" data-d="L" aria-label="Long '+c.s+'">L</button><button data-t="'+c.s+'" data-d="S" aria-label="Short '+c.s+'">S</button></div></div></div>'}
+function grid(){var a=N.slice();if(sort=="small")a.sort(function(x,y){return x.d-y.d});else if(sort=="deep")a.sort(function(x,y){return y.d-x.d});else a.sort(function(x,y){return Math.abs(y.ch)-Math.abs(x.ch)});
+ $("#grid").innerHTML=a.slice(0,shown).map(card).join("");$("#more").hidden=shown>=a.length;$("#more").textContent="Show all "+N.length+" coins"}
+document.querySelectorAll("#sort button").forEach(function(b){b.onclick=function(){document.querySelectorAll("#sort button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");sort=b.dataset.s;grid()}});
+$("#more").onclick=function(){shown=N.length;grid()};grid();
+/* ticket */
+function ticket(t,d){var c=N.filter(function(x){return x.s==t})[0];if(!c)return;var m=500,L=c.L,e=m*L;
+ $("#tkh").textContent=(d=="L"?"Long ":"Short ")+c.s+" · simulated";
+ $("#tkb").innerHTML="Margin $"+m+" at "+L+"× = "+fmt(e)+" exposure<br>Entry "+px(c.p)+" · max profit 3× entry size = "+fmt(e*3)+"<br>Liquidation at about "+(d=="L"?"-":"+")+(90/L).toFixed(1)+"% on the smoothed price<br>Taker fee 10 bps = "+fmt(e*.001)+"<br><br>Demonstration only. No order is placed and no wallet is connected.";
+ $("#tk").hidden=false}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("button[data-t]");if(b)ticket(b.dataset.t,b.dataset.d)});
+$("#tkx").onclick=function(){$("#tk").hidden=true};
+document.addEventListener("keydown",function(e){if(e.key=="Escape")$("#tk").hidden=true});
+/* paste address */
+$("#pf").addEventListener("submit",function(e){e.preventDefault();var v=$("#pa").value.trim(),r=$("#res");r.hidden=false;
+ if(!/^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(v)){r.innerHTML='<span class="down">That is not a Solana address.</span> Mint addresses are 32 to 44 characters.';return}
+ var h=0;for(var i=0;i<v.length;i++)h=(h*31+v.charCodeAt(i))>>>0;var d=Math.round(4000+(h%1500)*400),l=lev(d);
+ r.innerHTML='<b>'+v.slice(0,4)+'…'+v.slice(-4)+'</b> · simulated pool check<br>10% move depth '+fmt(d)+'<br>'+(l?'Listable at <span class="up">'+l+'×</span>. Longs cap '+fmt(d*.03)+', shorts cap '+fmt(d*.02):'<span class="down">Below the $15.00K floor.</span> Not listable yet')+'<br><span style="color:var(--muted)">Demonstration: the depth is generated from the address, not read from a pool.</span>'});
+/* ticker + stats (simulated) */
+var names=N.map(function(c){return c.s}),wl=["7xKX…2FA6","9aBc…8c09","3mQp…D1e4","Gh7r…a0b2"],tk=[];
+for(var i=0;i<26;i++){var w=wl[i%4],s=names[(i*7)%names.length],act=["longed","shorted","closed long","closed short"][i%4],amt=(Math.abs(Math.sin(i*3.1))*180+12).toFixed(2);tk.push('<span>'+w+' '+act+' <b style="color:var(--text);font-weight:500">'+s+'</b> · $'+amt+'</span>')}
+var t2=tk.join("");$("#tkr").innerHTML='<span class="live">SIMULATED FILLS</span>'+t2+t2;
+var vol=7644.46,fills=129,oi=83.4;function stats(){$("#s4").textContent="$12,480.00";$("#s5").textContent="$"+oi.toFixed(2);$("#s6").textContent="$"+vol.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});$("#s6d").textContent=fills+" fills";$("#v1").textContent="$12,480.00"}stats();
+if(!reduce)setInterval(function(){vol+=Math.random()*40;fills++;oi+=Math.random()*3-1;stats();$("#slot").textContent=(slot+=2).toLocaleString();$("#solpx").textContent=(sol+=Math.random()*.1-.05).toFixed(2)},2400);
+var slot=412000000+Math.floor(Math.random()*9e5),sol=142.31;$("#slot").textContent=slot.toLocaleString();$("#solpx").textContent=sol.toFixed(2);
+/* skew */
+var skc=$("#skc"),sg=skc.getContext("2d"),SC=42e6;
+function drawSk(){var d=Math.min(devicePixelRatio||1,2),r=skc.getBoundingClientRect();skc.width=r.width*d;skc.height=r.height*d;sg.setTransform(d,0,0,d,0,0);var W=r.width,H=r.height,pl=34,pb=22,pt=10,pr=10;
+ var tr=+$("#tr").value,bk=+$("#bk").value;function prem(t){return(bk+t/2)/SC*1e4}
+ var top=prem(250000),bot=prem(-250000),mx=Math.max(Math.abs(top),Math.abs(bot))*1.05;
+ function X(t){return pl+(t+250000)/500000*(W-pl-pr)}function Y(p){return pt+(1-(p+mx)/(2*mx))*(H-pt-pb)}
+ sg.clearRect(0,0,W,H);sg.strokeStyle="#222";sg.fillStyle="#8a8a86";sg.font="10px JetBrains Mono, monospace";sg.textAlign="right";sg.lineWidth=1;
+ [-1,-.5,0,.5,1].forEach(function(f){var p=f*mx,y=Y(p);sg.beginPath();sg.moveTo(pl,y);sg.lineTo(W-pr,y);sg.stroke();sg.fillText((p>0?"+":"")+p.toFixed(0),pl-6,y+3)});
+ sg.setLineDash([4,4]);sg.beginPath();sg.moveTo(X(0),pt);sg.lineTo(X(0),H-pb);sg.stroke();sg.setLineDash([]);
+ sg.textAlign="center";sg.fillText("sells ←",X(-170000),H-6);sg.fillText("→ buys",X(170000),H-6);
+ sg.strokeStyle="#c9f27a";sg.lineWidth=2.5;sg.beginPath();sg.moveTo(X(-250000),Y(bot));sg.lineTo(X(250000),Y(top));sg.stroke();
+ sg.fillStyle="#c9f27a";sg.beginPath();sg.arc(X(tr),Y(prem(tr)),5,0,7);sg.fill();
+ var p=prem(tr),adding=(tr>0&&bk>=0)||(tr<0&&bk<=0);
+ $("#tro").textContent=(tr>=0?"+":"-")+fmt(Math.abs(tr));$("#bko").textContent=(bk>=0?"+":"-")+fmt(Math.abs(bk));
+ var o=142.31;$("#k1").textContent=o.toFixed(2);$("#k2").textContent=(o*(1+p/1e4)).toFixed(2);$("#k3").textContent=(p>=0?"+":"")+p.toFixed(2)+" bps";$("#k4").textContent=(adding?"10.00":"4.00")+" bps";$("#k5").textContent=adding?"Adding skew":"Reducing skew";$("#k5").style.color=adding?"var(--down)":"var(--up)"}
+$("#tr").oninput=drawSk;$("#bk").oninput=drawSk;addEventListener("resize",drawSk);
+/* pnl */
+var OUT={win:{t:"+4%",a:"$694",b:"+$200",n:"SOL +4%. Your profit is paid out of the vault, so LPs carry trader wins.",c:"var(--up)"},loss:{t:"-4%",a:"$294",b:"-$200",n:"SOL -4%. Your loss stays in the vault and goes to LPs.",c:"var(--down)"},liq:{t:"-9.1%",a:"$0",b:"-$497",n:"SOL -9.1% on the smoothed price. The position is liquidated and the vault keeps the margin minus the liquidator fee.",c:"var(--down)"}};
+function pnl(k){var o=OUT[k];$("#prow").innerHTML='<div class="box"><div class="lab">Margin</div><div class="v">$500</div></div><div class="box"><div class="lab">Exposure</div><div class="v">$5,000</div></div><div class="box"><div class="lab">SOL move</div><div class="v" style="color:'+o.c+'">'+o.t+'</div></div><div class="box"><div class="lab">To you</div><div class="v" style="color:'+o.c+'">'+o.a+'</div><div class="lab" style="text-transform:none;letter-spacing:0">'+o.b+'</div></div>';$("#pnote").textContent=o.n+" Fees $3.00 each way."}
+document.querySelectorAll("#outc button").forEach(function(b){b.onclick=function(){document.querySelectorAll("#outc button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");pnl(b.dataset.o)}});pnl("win");
+/* funding */
+var fc=$("#fc"),fg=fc.getContext("2d"),fs=2;
+function drawF(){var d=Math.min(devicePixelRatio||1,2),r=fc.getBoundingClientRect();fc.width=r.width*d;fc.height=r.height*d;fg.setTransform(d,0,0,d,0,0);var W=r.width,H=r.height,pl=40,pb=20,pt=8;
+ var k=Math.abs(fs)*.075,cap=.30,sg2=fs>0?1:-1;function rate(t){return sg2*Math.min(cap,k*t)}
+ function X(t){return pl+t/7*(W-pl-8)}function Y(v){return pt+(1-(v+.3)/.6)*(H-pt-pb)}
+ fg.clearRect(0,0,W,H);fg.font="10px JetBrains Mono, monospace";fg.fillStyle="#8a8a86";fg.strokeStyle="#222";fg.textAlign="right";
+ [.3,.15,0,-.15,-.3].forEach(function(v){fg.beginPath();fg.moveTo(pl,Y(v));fg.lineTo(W-8,Y(v));fg.stroke();fg.fillText(v.toFixed(2)+"%",pl-5,Y(v)+3)});
+ fg.textAlign="center";for(var i=0;i<=7;i++)fg.fillText("d"+i,X(i),H-5);
+ fg.strokeStyle=fs>0?"#3ddc97":"#ff6b6b";fg.lineWidth=2;fg.beginPath();for(var t=0;t<=7;t+=.05){var x=X(t),y=Y(rate(t));t==0?fg.moveTo(x,y):fg.lineTo(x,y)}fg.stroke();
+ $("#f1").textContent=fs>0?"longs → shorts":"shorts → longs";$("#f2").textContent=Math.abs(rate(1)).toFixed(3)+"%/d";$("#f3").textContent="day "+(cap/k).toFixed(1)}
+document.querySelectorAll("#fsk button").forEach(function(b){b.onclick=function(){document.querySelectorAll("#fsk button").forEach(function(x){x.classList.remove("on")});b.classList.add("on");fs=+b.dataset.f;drawF()}});addEventListener("resize",drawF);
+/* limits */
+var maj=[["SOL","20×","1.00%","2 / 6 bps","$301.97M","$1,497.60","24/7"],["BTC","20×","1.00%","2 / 6 bps","$505.35M","$1,497.60","24/7"],["ETH","20×","1.00%","2 / 6 bps","$400.00M","$1,497.60","24/7"]];
+var lt=maj.map(function(m){return"<tr><td>"+m[0]+"</td><td>"+m[1]+"</td><td>"+m[2]+"</td><td>"+m[3]+"</td><td>"+m[4]+"</td><td>"+m[5]+"</td><td>0.30%/d</td><td>"+m[6]+"</td></tr>"}).join("");
+lt+=N.slice(0,12).map(function(c){var mt={5:"8.00%",4:"10.00%",3:"15.00%",2:"25.00%"}[c.L];return"<tr><td>"+c.s+"</td><td>"+c.L+"×</td><td>"+mt+"</td><td>4 / 10 bps</td><td>"+fmt(c.d*70)+"</td><td>$499.20</td><td>1.00%/d</td><td>24/7</td></tr>"}).join("");
+$("#ltb").innerHTML=lt;
+setTimeout(function(){drawSk();drawF()},60);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){drawSk();drawF()});
+})();
+</script>
+</body></html>
